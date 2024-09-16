@@ -41,17 +41,40 @@ public class Checkers {
         }
     }
 
-    public void makeMove(int fromX, int fromY, int toX, int toY) {
-        if (board[fromX][fromY] == WHITE && (toX == fromX + 1 || toX == fromX - 1) && (toY == fromY + 1 || toY == fromY - 1) && board[toX][toY] == EMPTY) {
+    public boolean makeMove(int fromX, int fromY, int toX, int toY) {
+        if (board[fromX][fromY] == WHITE && Math.abs(toX - fromX) == 1 && Math.abs(toY - fromY) == 1 && board[toX][toY] == EMPTY) {
             board[toX][toY] = WHITE;
             board[fromX][fromY] = EMPTY;
-        } else if (board[fromX][fromY] == BLACK && (toX == fromX + 1 || toX == fromX - 1) && (toY == fromY + 1 || toY == fromY - 1) && board[toX][toY] == EMPTY) {
+            return false;
+        } else if (board[fromX][fromY] == BLACK && Math.abs(toX - fromX) == 1 && Math.abs(toY - fromY) == 1 && board[toX][toY] == EMPTY) {
             board[toX][toY] = BLACK;
             board[fromX][fromY] = EMPTY;
+            return false;
+        } else if (board[fromX][fromY] == WHITE && Math.abs(toX - fromX) == 2 && Math.abs(toY - fromY) == 2 && board[toX][toY] == EMPTY) {
+            int midX = (fromX + toX) / 2;
+            int midY = (fromY + toY) / 2;
+            if (board[midX][midY] == BLACK) {
+                board[toX][toY] = WHITE;
+                board[fromX][fromY] = EMPTY;
+                board[midX][midY] = EMPTY;
+                return true;
+            }
+        } else if (board[fromX][fromY] == BLACK && Math.abs(toX - fromX) == 2 && Math.abs(toY - fromY) == 2 && board[toX][toY] == EMPTY) {
+            int midX = (fromX + toX) / 2;
+            int midY = (fromY + toY) / 2;
+            if (board[midX][midY] == WHITE) {
+                board[toX][toY] = BLACK;
+                board[fromX][fromY] = EMPTY;
+                board[midX][midY] = EMPTY;
+                return true;
+            }
         } else {
             System.out.println("Not a valid move!");
+            return false;
         }
+        return false;
     }
+
 
     public static void main(String[] args) {
         Checkers game = new Checkers();
@@ -60,14 +83,16 @@ public class Checkers {
         while (true) {
             System.out.println("Enter your move (For example, a2):");
             String input = scanner.nextLine();
-            int fromX = input.charAt(1) - '1';
-            int fromY = input.charAt(0) - 'a';
+            int fromX = input.charAt(0) - 'a';
+            int fromY = input.charAt(1) - '1';
             System.out.println("Enter your move (For example, a4):");
             input = scanner.nextLine();
-            int toX = input.charAt(1) - '1';
-            int toY = input.charAt(0) - 'a';
-            game.makeMove(fromX, fromY, toX, toY);
-            game.printBoard();
+            int toX = input.charAt(0) - 'a';
+            int toY = input.charAt(1) - '1';
+        
+            if (game.makeMove(fromX, fromY, toX, toY)) {
+                System.out.println("Checkers has eliminated!");
+            }
         }
     }
 }
